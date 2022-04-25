@@ -6,11 +6,9 @@
 
 
 class Wektor {
-private:
+public:
 
     double rozmiar[ROZMIAR];     
-
-public:
 
     Wektor();
     Wektor(double [ROZMIAR]);

@@ -16,29 +16,29 @@ Wektor::Wektor(double tmp[ROZMIAR]) {
 
 
 Wektor Wektor::operator + (const Wektor &v) {
-    Wektor result;
+    Wektor wynik;
     for (int i = 0; i < ROZMIAR; ++i) {
-      result[i] = (*this)[i] + v[i];
+      wynik[i] = (*this)[i] + v[i];
     }
-    return result;
+    return wynik;
 }
 
 
 Wektor Wektor::operator - (const Wektor &v) {
-    Wektor result;
+    Wektor wynik;
     for (int i = 0; i < ROZMIAR; ++i) {
-        result[i] = (*this)[i] - v[i];
+        wynik[i] = (*this)[i] - v[i];
     }
-    return result;
+    return wynik;
 }
 
 
 Wektor Wektor::operator * (const double &tmp) {
-    Wektor result;
+    Wektor wynik;
     for (int i = 0; i < ROZMIAR; ++i) {
-        result[i] = (*this)[i] * tmp;
+        wynik[i] = (*this)[i] * tmp;
     }
-    return result;
+    return wynik;
 }
 
 double Wektor::operator * (const Wektor &Wek){
@@ -52,12 +52,12 @@ double Wektor::operator * (const Wektor &Wek){
 }
 
 Wektor Wektor::operator / (const double &tmp) {
-    Wektor result;
+    Wektor wynik;
 
     for (int i = 0; i < ROZMIAR; ++i) {
-        result[i] = (*this)[i] / tmp;
+        wynik[i] = (*this)[i] / tmp;
     }
-    return result;
+    return wynik;
 }
 
 
@@ -91,7 +91,9 @@ std::istream &operator >> (std::istream &in, Wektor &tmp) {
 
 double Wektor::dl_wek(){
 double dl_wek_bledu;
+Wektor blad = (*this);
 
-dl_wek_bledu=sqrt((*this)*(*this));
+dl_wek_bledu=sqrt(blad*blad);
+
 return dl_wek_bledu;
 }

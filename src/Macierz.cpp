@@ -4,9 +4,7 @@
 
 Macierz::Macierz() {
     for (int i = 0; i < ROZMIAR; ++i) {
-        for (int j = 0; j < ROZMIAR; ++j) {
-            wartosc[i][j] = 0;
-        }
+            wartosc->rozmiar[i] = 0;
     }
 }
 
@@ -16,6 +14,37 @@ Macierz::Macierz(Wektor tmp[ROZMIAR]) {
     }
 }
 
+
+double &Macierz::operator()(unsigned int rzad, unsigned int kolumna) {
+
+    if (rzad >= ROZMIAR|| kolumna >= ROZMIAR) {
+        std::cout << "Error: Macierz jest poza zasiegiem";
+        exit(0); 
+    }
+    return wartosc[rzad][kolumna];
+}
+
+
+const double &Macierz::operator () (unsigned int rzad, unsigned int kolumna) const{
+
+    if (rzad >= ROZMIAR||kolumna >= ROZMIAR) {
+        std::cout << "Error: Macierz jest poza zasiegiem";
+        exit(0); 
+    }
+
+    return wartosc[rzad][kolumna];
+}
+
+
+Macierz Macierz::operator + (Macierz tmp) {
+    Macierz wynik;
+    for (int i = 0; i < ROZMIAR; ++i) {
+        for (int j = 0; j < ROZMIAR; ++j) {
+            wynik(i, j) = this->wartosc[i][j] + tmp(i, j);
+        }
+    }
+    return wynik;
+}
 
 Wektor Macierz::operator * (Wektor tmp) {
     Wektor result;
@@ -27,52 +56,21 @@ Wektor Macierz::operator * (Wektor tmp) {
     return result;
 }
 
-double &Macierz::operator()(unsigned int row, unsigned int column) {
 
-    if (row >= ROZMIAR|| column >= ROZMIAR) {
-        std::cout << "Error: Macierz jest poza zasiegiem";
-        exit(0); 
-    }
-    return wartosc[row][column];
-}
-
-
-const double &Macierz::operator () (unsigned int row, unsigned int column) const{
-
-    if (row >= ROZMIAR||column >= ROZMIAR) {
-        std::cout << "Error: Macierz jest poza zasiegiem";
-        exit(0); 
-    }
-
-    return wartosc[row][column];
-}
-
-
-Macierz Macierz::operator + (Macierz tmp) {
-    Macierz result;
+std::istream &operator>>(std::istream &in, Macierz &mac) {
     for (int i = 0; i < ROZMIAR; ++i) {
         for (int j = 0; j < ROZMIAR; ++j) {
-            result(i, j) = this->wartosc[i][j] + tmp(i, j);
-        }
-    }
-    return result;
-}
-
-
-std::istream &operator>>(std::istream &in, Macierz &mat) {
-    for (int i = 0; i < ROZMIAR; ++i) {
-        for (int j = 0; j < ROZMIAR; ++j) {
-            in >> mat(i, j);
+            in >> mac(i, j);
         }
     }
     return in;
 }
 
 
-std::ostream &operator<<(std::ostream &out, const Macierz &mat) {
+std::ostream &operator<<(std::ostream &out, const Macierz &mac) {
     for (int i = 0; i < ROZMIAR; ++i) {
         for (int j = 0; j < ROZMIAR; ++j) {
-            out << "| " << mat(i, j) << " |\t"; 
+            out << "| " << mac(i, j) << " |\t"; 
         }
         std::cout << std::endl;
     }
@@ -92,7 +90,7 @@ return transponowana;
 
 
 
-double Macierz::wyznacznik()const{
+/*double Macierz::wyznacznik()const{
 double wyznacznik;
 double a, b, c;
 
@@ -163,7 +161,34 @@ Wektor wynik;
     return wynik;
 
 }
+*/
 
+Macierz Macierz::zamien_wiersz(int wiersz, int kolumna)const{
+    Macierz tmp;
+    double komórka=1;
+    int licznik_zamian =1;
+    int wiersz_zamien;
+
+    wiersz_zamien = wiersz + 1;
+    while((licznik_zamian<ROZMIAR-wiersz)&&(komórka!=0)){
+        komórka=tmp(wiersz,kolumna);
+        std::swap(tmp.wartosc[wiersz],tmp.wartosc[wiersz_zamien]);
+        tmp.wartosc[wiersz_zamien]=tmp.wartosc[wiersz_zamien]*(-1);
+        licznik_zamian++;
+        wiersz_zamien++;
+    }
+    return tmp;
+}
+
+bool Macierz::czy_zero(int wiersz, int kolumna){
+    for(wiersz;wiersz<ROZMIAR;++wiersz){
+        if((*this)(wiersz,kolumna)!=0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
 
 Wektor Macierz::wyz_blad(Wektor& x, Wektor& wyn){
   Wektor blad;
@@ -172,3 +197,35 @@ Wektor Macierz::wyz_blad(Wektor& x, Wektor& wyn){
   return blad;
 }
 
+double Macierz::Gauss(){
+    double dzielniki[ROZMIAR-1];
+    double wyznacznik=1;
+    Macierz pomocnicza;
+    Wektor zerowanie;
+    int wiersz=0, kolumna=0, licznik_gauss = 0;
+    int w, k;
+    
+    pomocnicza = (*this);
+
+    for(int j=1; j<ROZMIAR; j++){
+        if(pomocnicza(wiersz,kolumna)!=0){
+        w=wiersz;
+        k=kolumna;
+        dzielniki[wiersz] = pomocnicza(wiersz,kolumna);
+        zerowanie=pomocnicza.wartosc[wiersz]/dzielniki[wiersz];
+        for(int i=1; i<ROZMIAR-wiersz;i++){
+            pomocnicza.wartosc[w+1] = pomocnicza.wartosc[w+1]- (zerowanie*pomocnicza(w+1,k));
+            w++;
+        }
+        wiersz++;
+        kolumna++;
+        std::cout << pomocnicza << std::endl;
+    }
+
+    for(int k=0;k<ROZMIAR;k++){
+    wyznacznik=wyznacznik*pomocnicza(k,k);
+    }   
+    std::cout << wyznacznik << std::endl;
+
+    return wyznacznik;
+}

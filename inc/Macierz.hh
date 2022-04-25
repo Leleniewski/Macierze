@@ -20,12 +20,15 @@ public:
   double  &operator () (unsigned int row, unsigned int column);
   const double &operator () (unsigned int row, unsigned int column) const;
   Macierz transponowanie();
-  double wyznacznik()const;
+  /*double wyznacznik()const;
   double wyznacznik_x(Wektor &v)const;
   double wyznacznik_y(Wektor &v)const;
   double wyznacznik_z(Wektor &v)const;
-  Wektor oblicz(Wektor &v, double wyznacznik_u);
+  Wektor oblicz(Wektor &v, double wyznacznik_u);*/
   Wektor wyz_blad(Wektor& x, Wektor& wyn);
+  double Gauss();
+  Macierz zamien_wiersz(int wiersz, int kolumna)const;
+  bool czy_zero(int wiersz, int kolumna);
 };
 
 std::istream &operator>>(std::istream &in, Macierz &mat);

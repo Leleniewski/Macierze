@@ -11,17 +11,19 @@
 
 
 int main() {
+  Macierz wspolczynniki, trans;
+  Wektor wyr_wol;
   Wektor wek_wyrz_wol, wek_wynik, wek_bledu;
   Macierz mat_wczyt, transponowana;
-  double wyznacznik_u; 
+  double wyznacznik_u=1; 
   std::cin >> mat_wczyt;
   std::cin >> wek_wyrz_wol;
-  transponowana = mat_wczyt.transponowanie();
-  wyznacznik_u=transponowana.wyznacznik();
-  std::cout << "Macierz trans: " << std::endl << transponowana << std::endl;
+  trans = mat_wczyt.transponowanie();
+  trans.Gauss(); 
+  std::cout << "Macierz trans: " << std::endl << trans << std::endl;
   std::cout << "Wektor: " << std::endl << wek_wyrz_wol << std::endl << std::endl;
   if(wyznacznik_u!=0){
-    wek_wynik=transponowana.oblicz(wek_wyrz_wol, wyznacznik_u);
+    wek_wynik=trans.oblicz(wek_wyrz_wol, wyznacznik_u);
   }else{
     std::cout << "Nie da się obliczyć rozwiązań." << std::endl;
   }
