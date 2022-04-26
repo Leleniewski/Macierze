@@ -165,13 +165,17 @@ Wektor wynik;
 
 Macierz Macierz::zamien_wiersz(int wiersz, int kolumna)const{
     Macierz tmp;
-    double komórka=1;
+    tmp=(*this);
+    double komorka=1;
     int licznik_zamian =1;
     int wiersz_zamien;
 
     wiersz_zamien = wiersz + 1;
-    while((licznik_zamian<ROZMIAR-wiersz)&&(komórka!=0)){
-        komórka=tmp(wiersz,kolumna);
+    while((licznik_zamian<ROZMIAR-wiersz)&&(komorka!=0)){
+        komorka=tmp(wiersz,kolumna);
+        std::cout << "Zamiana miejscami wierszy:" << std::endl;
+        std::cout << tmp.wartosc[wiersz] << std::endl;
+        std::cout << tmp.wartosc[wiersz_zamien] << std::endl <<std::endl;
         std::swap(tmp.wartosc[wiersz],tmp.wartosc[wiersz_zamien]);
         tmp.wartosc[wiersz_zamien]=tmp.wartosc[wiersz_zamien]*(-1);
         licznik_zamian++;
@@ -180,52 +184,65 @@ Macierz Macierz::zamien_wiersz(int wiersz, int kolumna)const{
     return tmp;
 }
 
-bool Macierz::czy_zero(int wiersz, int kolumna){
-    for(wiersz;wiersz<ROZMIAR;++wiersz){
-        if((*this)(wiersz,kolumna)!=0){
+
+bool Macierz::czy_zero(int wiersz, int kolumna)const{
+    int w;
+    for(w = wiersz;w<ROZMIAR;++w){
+        if((*this)(w,kolumna)!=0){
             return true;
-        }else{
-            return false;
         }
     }
+            return false;
 }
-
-Wektor Macierz::wyz_blad(Wektor& x, Wektor& wyn){
+/*Wektor Macierz::wyz_blad(Wektor& x, Wektor& wyn){
   Wektor blad;
   blad=(*this)*x;
   blad=blad-wyn;
   return blad;
-}
+}*/
 
-double Macierz::Gauss(){
-    double dzielniki[ROZMIAR-1];
+/*double Macierz::Gauss(){
+    double dzielniki;
     double wyznacznik=1;
     Macierz pomocnicza;
     Wektor zerowanie;
-    int wiersz=0, kolumna=0, licznik_gauss = 0;
+    int wiersz=0, kolumna=0, liczba_zerowan =0;
     int w, k;
     
     pomocnicza = (*this);
 
-    for(int j=1; j<ROZMIAR; j++){
+    while(liczba_zerowan<ROZMIAR){
         if(pomocnicza(wiersz,kolumna)!=0){
         w=wiersz;
         k=kolumna;
-        dzielniki[wiersz] = pomocnicza(wiersz,kolumna);
-        zerowanie=pomocnicza.wartosc[wiersz]/dzielniki[wiersz];
+        std::cout << "Aktualny wygląd macierzy" << std::endl;
+        std::cout << pomocnicza << std::endl << std::endl;
+        dzielniki = pomocnicza(wiersz,kolumna);
+        std::cout << "Liczba, przez którą dzielimy wiersz" << std::endl;
+        std::cout << dzielniki << std::endl << std::endl;
+        zerowanie=pomocnicza.wartosc[wiersz]/dzielniki;
+        std::cout << "Wiersz, którym zerujemy miejsca" << std::endl;
+        std::cout << zerowanie << std::endl << std::endl;
         for(int i=1; i<ROZMIAR-wiersz;i++){
             pomocnicza.wartosc[w+1] = pomocnicza.wartosc[w+1]- (zerowanie*pomocnicza(w+1,k));
             w++;
         }
         wiersz++;
         kolumna++;
-        std::cout << pomocnicza << std::endl;
+        liczba_zerowan++;
+        }else{
+            if(pomocnicza.czy_zero(wiersz,kolumna)){
+                pomocnicza = pomocnicza.zamien_wiersz(wiersz,kolumna);
+            }else{
+            std::cout << "Układ równań nie ma rozwiązań. Wyznacznik macierzy równy '0'." << std::endl;
+            return 0;
+            }
+        }
     }
 
     for(int k=0;k<ROZMIAR;k++){
     wyznacznik=wyznacznik*pomocnicza(k,k);
-    }   
-    std::cout << wyznacznik << std::endl;
-
+    }  
+    std::cout << "Wyznacznik tej macierzy wynosi: " << wyznacznik << std::endl<<std::endl;
     return wyznacznik;
-}
+}*/

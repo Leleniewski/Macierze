@@ -7,10 +7,9 @@
 #include <cstdlib>
 
 class Macierz {
-private:
+public:
   Wektor wartosc[ROZMIAR];               
 
-public:
   Macierz(Wektor [ROZMIAR]);           
   Macierz();                               
   
@@ -24,11 +23,11 @@ public:
   double wyznacznik_x(Wektor &v)const;
   double wyznacznik_y(Wektor &v)const;
   double wyznacznik_z(Wektor &v)const;
-  Wektor oblicz(Wektor &v, double wyznacznik_u);*/
-  Wektor wyz_blad(Wektor& x, Wektor& wyn);
-  double Gauss();
+  Wektor oblicz(Wektor &v, double wyznacznik_u);
+  Wektor wyz_blad(Wektor& x, Wektor& wyn);*/
+  /*double Gauss();*/
   Macierz zamien_wiersz(int wiersz, int kolumna)const;
-  bool czy_zero(int wiersz, int kolumna);
+  bool czy_zero(int wiersz, int kolumna)const;
 };
 
 std::istream &operator>>(std::istream &in, Macierz &mat);

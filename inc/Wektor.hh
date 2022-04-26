@@ -8,7 +8,9 @@
 class Wektor {
 public:
 
-    double rozmiar[ROZMIAR];     
+    double rozmiar[ROZMIAR];  
+
+
 
     Wektor();
     Wektor(double [ROZMIAR]);

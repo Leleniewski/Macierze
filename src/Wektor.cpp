@@ -91,9 +91,11 @@ std::istream &operator >> (std::istream &in, Wektor &tmp) {
 
 double Wektor::dl_wek(){
 double dl_wek_bledu;
-Wektor blad = (*this);
 
-dl_wek_bledu=sqrt(blad*blad);
+for(int i=0;i<ROZMIAR;++i){
+    dl_wek_bledu=(*this)[i]*(*this)[i];
+}
+dl_wek_bledu=sqrt(dl_wek_bledu);
 
 return dl_wek_bledu;
 }
