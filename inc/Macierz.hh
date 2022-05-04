@@ -7,8 +7,19 @@
 #include <cstdlib>
 
 class Macierz {
-public:
+  private:
+
   Wektor wartosc[ROZMIAR];               
+
+  public:
+
+  void setMac(int i, int j, double liczby){
+    wartosc[i][j]=liczby;
+  }
+
+  double getMac(int i, int j){
+    return wartosc[i][j];
+  }
 
   Macierz(Wektor [ROZMIAR]);           
   Macierz();                               
@@ -19,15 +30,6 @@ public:
   double  &operator () (unsigned int row, unsigned int column);
   const double &operator () (unsigned int row, unsigned int column) const;
   Macierz transponowanie();
-  /*double wyznacznik()const;
-  double wyznacznik_x(Wektor &v)const;
-  double wyznacznik_y(Wektor &v)const;
-  double wyznacznik_z(Wektor &v)const;
-  Wektor oblicz(Wektor &v, double wyznacznik_u);
-  Wektor wyz_blad(Wektor& x, Wektor& wyn);*/
-  /*double Gauss();*/
-  Macierz zamien_wiersz(int wiersz, int kolumna)const;
-  bool czy_zero(int wiersz, int kolumna)const;
 };
 
 std::istream &operator>>(std::istream &in, Macierz &mat);

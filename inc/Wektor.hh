@@ -6,11 +6,19 @@
 
 
 class Wektor {
-public:
+  private:
+    
+    double rozmiar[ROZMIAR];
+      
+  public:
 
-    double rozmiar[ROZMIAR];  
+    void setWek(int a, double x){
+        rozmiar[a]=x;
+    }
 
-
+    double getWek(int a)const{
+        return rozmiar[a];
+    }
 
     Wektor();
     Wektor(double [ROZMIAR]);

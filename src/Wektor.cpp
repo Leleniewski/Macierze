@@ -62,9 +62,6 @@ Wektor Wektor::operator / (const double &tmp) {
 
 
 const double &Wektor::operator [] (int index) const {
-    if (index < 0 || index >= ROZMIAR) {
-        std::cerr << "Error: Wektor jest poza zasiegiem!" << std::endl;
-    } 
     return rozmiar[index];
 }
 

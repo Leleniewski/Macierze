@@ -22,162 +22,194 @@ UkladRownanLiniowych::UkladRownanLiniowych(){
     }
 }
 
-UkladRownanLiniowych UkladRownanLiniowych::podstaw(Macierz tmp, Wektor tymczas){
-    (*this).mac=tmp;
-    (*this).wek_wyn=tymczas;
-    return (*this);
+std::istream& operator >> (std::istream &Strm, UkladRownanLiniowych &UklRown){
+    double liczby;
+    for(int i=0; i<ROZMIAR; ++i){
+        for (int j=0; j<ROZMIAR ; ++j) {
+        Strm >> liczby;
+        UklRown.setUkl_macierz(i, j, liczby);
+        }
+    }
 
-}
+    for(int i=0; i<ROZMIAR; ++i){
+        Strm>>liczby;
+        UklRown.setUkl_wektor(i,liczby);
+    }
 
-std::istream &operator>>(std::istream &Strm, UkladRownanLiniowych &UklRown){
-    Strm >> UklRown.mac >> UklRown.wek_wyn;
     return Strm;
 }
 
-std::ostream &operator<<(std::ostream &Strm,const UkladRownanLiniowych &UklRown){
-
+std::ostream &operator<<(std::ostream &Strm, UkladRownanLiniowych &UklRown){
     for (int i=0;i<ROZMIAR;++i){
         Strm << "| ";
-        for (int j=0;j<ROZMIAR;++j){
-            Strm << std::left << std::setw(5) << UklRown.mac(i, j);
+        for(int j=0;j<ROZMIAR; ++j){
+            Strm << UklRown.getUkl_macierz(i,j)<<"\t";
         }
         Strm << "| |x_" << i+1 << "| ";
         if(i==1)
             Strm << " = ";
 	    else
             Strm << "   ";
-	Strm << " [ " <<UklRown.wek_wyn[i] << " ] ";
+	Strm << " [ " << UklRown.getUkl_wektor(i) << " ] ";
         std::cout << std::endl;
     }
     return Strm;
 }
 
-    Wektor UkladRownanLiniowych::wyz_blad(Wektor &odp){
-        Wektor blad;
-        blad=(*this).mac*odp;
-        blad=blad-(*this).wek_wyn;
-        return blad;   
-    }
-
-    bool UkladRownanLiniowych::czy_zero(int wiersz, int kolumna)const{
-    int w;
-    for(w = wiersz;w<ROZMIAR;++w){
-        if((*this).mac(w,kolumna)!=0){
-            return true;
+bool UkladRownanLiniowych::zeruj_kol(int wiersz, int kolumna){
+    int j=wiersz+1, i=0;
+    
+    if(wiersz<ROZMIAR && kolumna<ROZMIAR-1){
+        for(i=wiersz+1; i<ROZMIAR; i++){
+            if((*this).mac(i,kolumna)==0)
+                ++j;
         }
     }
-            return false;
+    if(j==i){
+        std::cout << "Równanie nie ma jednego rozwiązania" <<std::endl<<std::endl;
+        exit(0);
+        return false;
+
+    }
+    else{
+        return true;
+    }
 }
 
-Macierz UkladRownanLiniowych::zamien_wiersz(int wiersz, int kolumna){
-    Macierz tmp=(*this).mac;
-    double komorka=1;
-    int licznik_zamian =1;
-    int wiersz_zamien;
-
-    wiersz_zamien = wiersz + 1;
-    while((licznik_zamian<ROZMIAR-wiersz)&&(komorka!=0)){
-        komorka=tmp(wiersz,kolumna);
-        std::cout << "Zamiana miejscami wierszy:" << std::endl;
-        std::cout << tmp.wartosc[wiersz] << std::endl;
-        std::cout << tmp.wartosc[wiersz_zamien] << std::endl <<std::endl;
-        std::swap(tmp.wartosc[wiersz],tmp.wartosc[wiersz_zamien]);
-        tmp.wartosc[wiersz_zamien]=tmp.wartosc[wiersz_zamien]*(-1);
-        licznik_zamian++;
-        wiersz_zamien++;
+UkladRownanLiniowych UkladRownanLiniowych::zamiana_wierszy(int wiersz, int kolumna)const{
+    UkladRownanLiniowych tmp = (*this);
+    int i=wiersz+1;
+    
+    if(tmp.mac(wiersz,kolumna)==0){
+        while (i < ROZMIAR && tmp.mac(i,kolumna) == 0) {
+            ++i;
+        }
+        if (tmp.mac(i,kolumna) != 0) {
+            for (int j = kolumna; j < ROZMIAR; ++j) {
+                std::swap(tmp.mac(wiersz, j), tmp.mac(i, j));
+                std::swap(tmp.wek_wyn[wiersz], tmp.wek_wyn[i]);
+            }
+            tmp.Wyswietl_zamiana_wierszy(wiersz,i);
+        }
     }
     return tmp;
 }
 
-double UkladRownanLiniowych::Gauss(){
-    UkladRownanLiniowych uklad = (*this);
-    double dzielniki;
-    double wyznacznik=1;
-    Macierz pomocnicza=(*this).mac;
-    Wektor zerowanie=(*this).wek_wyn;
-    int wiersz=0, kolumna=0, liczba_zerowan =1;
-    int w, k;
-
-    std::cout << "Aktualny wygląd macierzy" << std::endl;
-    std::cout << pomocnicza << std::endl << std::endl;
-
-    while(liczba_zerowan<ROZMIAR){
-        if(pomocnicza(wiersz,kolumna)!=0){
-        w=wiersz;
-        k=kolumna;
-        dzielniki = pomocnicza(wiersz,kolumna);
-        std::cout << "Liczba, przez którą dzielimy wiersz" << std::endl;
-        std::cout << dzielniki << std::endl << std::endl;
-        zerowanie=pomocnicza.wartosc[wiersz]/dzielniki;
-        std::cout << "Wiersz, którym zerujemy miejsca" << std::endl;
-        std::cout << zerowanie << std::endl << std::endl;
-        for(int i=1; i<ROZMIAR-wiersz;i++){
-            pomocnicza.wartosc[w+1] = pomocnicza.wartosc[w+1]- (zerowanie*pomocnicza(w+1,k));
-            w++;
-        }
-        std::cout << "Aktualny wygląd macierzy" << std::endl;
-        std::cout << pomocnicza << std::endl << std::endl;
-        wiersz++;
-        kolumna++;
-        liczba_zerowan++;
-        }else{
-            if(pomocnicza.czy_zero(wiersz,kolumna)){
-                pomocnicza = pomocnicza.zamien_wiersz(wiersz,kolumna);
-            }else{
-            std::cout << "Układ równań nie ma rozwiązań. Wyznacznik macierzy równy '0'." << std::endl;
-            return 0;
-            }
-        }
+void UkladRownanLiniowych::czy_zero(int wiersz, int kolumna){
+    if((*this).zeruj_kol(wiersz, kolumna)==true){
+        (*this)=(*this).zamiana_wierszy(wiersz,kolumna);
     }
-
-    for(int k=0;k<ROZMIAR;k++){
-    wyznacznik=wyznacznik*pomocnicza(k,k);
-    }  
-    std::cout << "Wyznacznik tej macierzy wynosi: " << wyznacznik << std::endl<<std::endl;
-    return wyznacznik;
 }
 
-Wektor UkladRownanLiniowych::oblicz()const{
-    UkladRownanLiniowych uklad=(*this);
-    Macierz macierz_pom = (*this).mac;
-    Wektor wektor_pom = (*this).wek_wyn;
-    Wektor wyznaczniki ,wyniki;
-    double wyznacznik_mac;
+UkladRownanLiniowych UkladRownanLiniowych::Gauss(int wiersz, int kolumna){
+    double pomocnicza;
 
-    wyznacznik_mac=uklad.Gauss();
-    for(int i=0;i<ROZMIAR;++i){
-        for(int j=0;j<ROZMIAR;j++){
-        std::swap(macierz_pom(j,i), wektor_pom[j]);
+    for (int j = wiersz+1; j < ROZMIAR; ++j){
+        pomocnicza = (*this).mac(j, kolumna);
+        for (int i = kolumna; i < ROZMIAR; ++i) {
+            (*this).mac(j, i) = (*this).mac(j, i) - (pomocnicza * (*this).mac(wiersz, i));
         }
-        uklad=uklad.podstaw(macierz_pom,wektor_pom);
-
-        switch (i)
-        {
-        case 0:
-            std::cout<<"Wyliczanie wyznacznika 'x':"<<std::endl<<std::endl;
-            break;
-        
-        case 1:
-            std::cout<<"Wyliczanie wyznacznika 'y':"<<std::endl<<std::endl;
-            break;
-
-        case 2:
-            std::cout<<"Wyliczanie wyznacznika 'z':"<<std::endl<<std::endl;
-            break;
-
-        default:
-            break;
+        (*this).wek_wyn[j] = (*this).wek_wyn[j] - (pomocnicza *(*this).wek_wyn[wiersz]);
+        if (pomocnicza != 0){
+            (*this).Wyswietl_zerowanie(j, pomocnicza, wiersz);
         }
-
-        wyznaczniki[i]=uklad.Gauss();
-        for(int j=0;j<ROZMIAR;j++){
-        std::swap(wektor_pom[j],macierz_pom(j,i));
-        }
-        uklad=uklad.podstaw(macierz_pom,wektor_pom);
     }
-    for(int i=0;i<ROZMIAR;++i){
-        wyniki[i]=wyznaczniki[i]/wyznacznik_mac;
+    if(wiersz>0){
+        for (int j = wiersz; j >0; --j) {
+            pomocnicza = (*this).mac(j-1, kolumna);
+            for (int i = kolumna; i < ROZMIAR; ++i) {
+                (*this).mac(j-1, i) = (*this).mac(j-1, i) - (pomocnicza * (*this).mac(wiersz, i));
+            }
+            (*this).wek_wyn[j-1] = (*this).wek_wyn[j-1] - (pomocnicza *(*this).wek_wyn[wiersz]);
+            if (pomocnicza != 0){
+                (*this).Wyswietl_zerowanie(j-1, pomocnicza, wiersz);
+            }
+        }
+    }   
+        return (*this);
     }
 
-    return wyniki;
+UkladRownanLiniowych UkladRownanLiniowych::dzielenie_wierszy(int wiersz, int kolumna){
+    double dzielnik;
+    dzielnik = (*this).mac(wiersz, kolumna);
+
+    for (int i = 0; i < ROZMIAR; ++i) {
+        (*this).mac(wiersz, i) = (*this).mac(wiersz, i) / dzielnik;
+    }
+    (*this).wek_wyn[wiersz] = (*this).wek_wyn[wiersz]/dzielnik;
+    if (dzielnik != 1){
+        (*this).Wyswietl_dzielenie(wiersz, dzielnik);
+    }
+ 
+    return (*this);
+}
+
+UkladRownanLiniowych UkladRownanLiniowych::dzialania(int wiersz, int kolumna){
+    (*this).dzielenie_wierszy(wiersz, kolumna);
+    (*this).Gauss(wiersz, kolumna);
+    return (*this);
+}
+
+
+Wektor UkladRownanLiniowych::Oblicz(){
+    Wektor wynik;
+    int wiersze =0, kolumny =0;
+
+    (*this).czy_zero(wiersze, kolumny);
+    for(int w=0; w<ROZMIAR;++w){
+        (*this).dzialania(wiersze,kolumny);
+        if(wiersze<ROZMIAR){
+        wiersze++;
+        kolumny++;
+        (*this).czy_zero(wiersze,kolumny);
+        }
+    }
+    
+    for(int i=0; i<ROZMIAR;++i){
+        wynik[i]=(*this).wek_wyn[i];
+    }
+    return wynik;
+}
+
+Wektor UkladRownanLiniowych::wyz_blad(Wektor &odp){
+    Wektor blad;
+    blad=(*this).mac*odp;
+    blad=blad-(*this).wek_wyn;
+    return blad;   
+}
+
+void UkladRownanLiniowych::wyswietl(){
+    Wektor wynik, blad;
+    double dlugosc_bledu;
+
+    (*this).mac=(*this).mac.transponowanie();
+    UkladRownanLiniowych pom=(*this);
+
+    std::cout << std::endl << "Układ równań liniowych:"<<std::endl;
+    std::cout << (*this) << std::endl<<std::endl;
+    wynik=(*this).Oblicz();
+    std::cout << "Rozwiąznaia układu równań [x, y, z]: "<<std::endl;
+    std::cout << wynik << std::endl<<std::endl;
+    blad=pom.wyz_blad(wynik);
+    dlugosc_bledu=blad.dl_wek();
+    std::cout << "Wektor błędu wynosi: "<<std::endl;
+    std::cout << blad << std::endl<<std::endl;
+    std::cout << "Długość wektora błędu wynosi: "<<std::endl;
+    std::cout << dlugosc_bledu << std::endl<<std::endl;
+}
+
+
+    
+void UkladRownanLiniowych::Wyswietl_zamiana_wierszy(int wiersz, int zmiana){
+    std::cout << "Zamieniono wiersze " << wiersz+1 << " z wierszem " << zmiana+1 << std::endl << std::endl;
+    std::cout << (*this) << std::endl << std::endl;
+}
+
+void UkladRownanLiniowych::Wyswietl_zerowanie(int zmiana, double liczba, int wiersz){
+    std::cout << "Od wiersza " << zmiana+1 << " odjęto wiersz " << wiersz+1 << " pomnożony przez " << liczba << std::endl << std::endl;
+    std::cout << (*this) << std::endl << std::endl;
+}
+void UkladRownanLiniowych::Wyswietl_dzielenie(int wiersz, double liczba){
+    std::cout << "Podzielono wiersz: " << wiersz+1 << " przez liczbę: " << liczba << std::endl << std::endl;
+    std::cout << (*this) << std::endl << std::endl;
 }
